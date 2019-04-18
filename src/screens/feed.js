@@ -32,8 +32,8 @@ class FeedScreen extends Component {
           keyExtractor={(item, index) => index.toString()}
           style={{ flex: 1, backgroundColor: "#eee" }}
           renderItem={({ item, index }) => (
-            <View key={index}>
-              <View>
+            <View key={index} style={styles.contentInFlatList}>
+              <View style={styles.descriptionHeaderPhoto}>
                 <Text>Time Ago</Text>
                 <Text>@Rusty</Text>
               </View>
@@ -49,9 +49,9 @@ class FeedScreen extends Component {
                 />
               </View>
 
-              <View>
+              <View style={styles.descriptionBottomPhoto}>
                 <Text>Caption text here...</Text>
-                <Text>View comments</Text>
+                <Text style={styles.comments}>View comments</Text>
               </View>
             </View>
           )}
@@ -83,6 +83,27 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     width: "100%",
     height: 275
+  },
+  contentInFlatList: {
+    width: "100%",
+    overflow: "hidden",
+    marginBottom: 5,
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderColor: "grey"
+  },
+  descriptionHeaderPhoto: {
+    padding: 5,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  descriptionBottomPhoto: {
+    padding: 5
+  },
+  comments: {
+    marginTop: 10,
+    textAlign: "center"
   }
 });
 
