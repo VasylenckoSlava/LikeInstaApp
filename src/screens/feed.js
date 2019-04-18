@@ -1,61 +1,145 @@
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import { f, auth, database, storage } from "../../config/config.js";
 
 class FeedScreen extends Component {
   state = {
-    photo_feed: [0, 1, 2, 3, 4],
-    refresh: false
+    photo_feed: [],
+    refresh: false,
+    loading: true
+  };
+
+  componentDidMount() {
+    this.loadFeed();
+  }
+
+  pluralCheck = s => {
+    if (s === 1) {
+      return " ago";
+    } else {
+      return "s ago";
+    }
+  };
+
+  timeConverter = timestamp => {
+    const a = new Date(timestamp * 1000);
+    const seconds = Math.floor((new Date() - a) / 1000);
+
+    let interval = Math.floor(seconds / 31536000);
+    if (interval > 1) {
+      return interval + " year" + this.pluralCheck(interval);
+    }
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) {
+      return interval + " month" + this.pluralCheck(interval);
+    }
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) {
+      return interval + " day" + this.pluralCheck(interval);
+    }
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) {
+      return interval + " hour" + this.pluralCheck(interval);
+    }
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) {
+      return interval + " minute" + this.pluralCheck(interval);
+    }
+    return Math.floor(seconds) + " seconds" + this.pluralCheck(interval);
+  };
+
+  loadFeed = () => {
+    this.setState({
+      refresh: true,
+      photo_feed: []
+    });
+    var that = this;
+
+    database
+      .ref("photos")
+      .orderByChild("posted")
+      .once("value")
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) data = snapshot.val();
+
+        var photo_feed = that.state.photo_feed;
+
+        for (var photo in data) {
+          var photoObj = data[photo];
+          database
+            .ref("users")
+            .child(photoObj.author)
+            .once("value")
+            .then(function(snapshot) {
+              var exists = snapshot.val() !== null;
+              if (exists) data = snapshot.val();
+
+              photo_feed.push({
+                id: photo,
+                url: photoObj.url,
+                caption: photoObj.caption,
+                posted: that.timeConverter(photoObj.posted),
+                author: data.username
+              });
+
+              that.setState({
+                refresh: false,
+                loading: false
+              });
+            })
+            .catch(error => console.log(error));
+        }
+      })
+      .catch(error => console.log(error));
   };
 
   loadNew = () => {
-    this.setState({
-      refresh: true
-    });
-    this.setState({
-      photo_feed: [5, 6, 7, 8, 9],
-      refresh: false
-    });
+    this.loadFeed();
   };
 
   render() {
-    const { refresh, photo_feed } = this.state;
+    const { refresh, photo_feed, loading } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.topScreenName}>
           <Text>Feed</Text>
         </View>
+        {loading === true ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text>Loading....</Text>
+          </View>
+        ) : (
+          <FlatList
+            refreshing={refresh}
+            onRefresh={this.loadNew}
+            data={photo_feed}
+            keyExtractor={(item, index) => index.toString()}
+            style={{ flex: 1, backgroundColor: "#eee" }}
+            renderItem={({ item, index }) => (
+              <View key={index} style={styles.contentInFlatList}>
+                <View style={styles.descriptionHeaderPhoto}>
+                  <Text>{item.posted}</Text>
+                  <Text>{item.author}</Text>
+                </View>
 
-        <FlatList
-          refreshing={refresh}
-          onRefresh={this.loadNew}
-          data={photo_feed}
-          keyExtractor={(item, index) => index.toString()}
-          style={{ flex: 1, backgroundColor: "#eee" }}
-          renderItem={({ item, index }) => (
-            <View key={index} style={styles.contentInFlatList}>
-              <View style={styles.descriptionHeaderPhoto}>
-                <Text>Time Ago</Text>
-                <Text>@Rusty</Text>
-              </View>
+                <View>
+                  <Image
+                    source={{ uri: item.url }}
+                    style={styles.imageStyles}
+                  />
+                </View>
 
-              <View>
-                <Image
-                  source={{
-                    uri:
-                      "https://source.unsplash.com/random/500x" +
-                      Math.floor(Math.random() * 800 + 500)
-                  }}
-                  style={styles.imageStyles}
-                />
+                <View style={styles.descriptionBottomPhoto}>
+                  <Text>{item.caption}</Text>
+                  <Text style={styles.comments}>View comments</Text>
+                </View>
               </View>
-
-              <View style={styles.descriptionBottomPhoto}>
-                <Text>Caption text here...</Text>
-                <Text style={styles.comments}>View comments</Text>
-              </View>
-            </View>
-          )}
-        />
+            )}
+          />
+        )}
       </View>
     );
   }

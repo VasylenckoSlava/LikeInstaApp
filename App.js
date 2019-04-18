@@ -13,9 +13,7 @@ import {
 import {
   createBottomTabNavigator,
   createAppContainer,
-  createStackNavigator
 } from "react-navigation";
-import { f, auth, database, storage } from "./config/config.js";
 import FeedScreen from "./src/screens/feed";
 import UploadScreen from "./src/screens/upload";
 import ProfileScreen from "./src/screens/profile";

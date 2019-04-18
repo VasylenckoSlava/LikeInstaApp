@@ -1,6 +1,6 @@
 import firebase from "firebase";
 
-//APi details
+//APi details alpmail01@gmail.com
 const config = {
   apiKey: "AIzaSyC1k-HBwuAuheocLGay_jVqiOR7BmIDT7U",
   authDomain: "testauth-bac32.firebaseapp.com",
@@ -16,4 +16,13 @@ firebase.initializeApp(config);
  export const database = firebase.database();
  export const auth = firebase.auth();
  export const storage = firebase.storage();
+
+
+ // structure of firebase
+
+// Users/userid/  email,name,username,avatar
+
+// Photos/photo-id  author,caption,posted,url
+
+//Comments/photo-id/comment-id  author,posted
 
