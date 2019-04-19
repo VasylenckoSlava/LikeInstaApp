@@ -67,9 +67,7 @@ class FeedScreen extends Component {
 
         for (var photo in data) {
           var photoObj = data[photo];
-          database
-            .ref("users")
-            .child(photoObj.author)
+          database.ref("users").child(photoObj.author).child('username')
             .once("value")
             .then(function(snapshot) {
               var exists = snapshot.val() !== null;
@@ -80,7 +78,7 @@ class FeedScreen extends Component {
                 url: photoObj.url,
                 caption: photoObj.caption,
                 posted: that.timeConverter(photoObj.posted),
-                author: data.username
+                author: data
               });
 
               that.setState({
