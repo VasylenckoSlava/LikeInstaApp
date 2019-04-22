@@ -8,11 +8,17 @@
 
 import React, { Component } from "react";
 import { StyleSheet } from "react-native";
-import { createBottomTabNavigator, createAppContainer } from "react-navigation";
+import {
+  createBottomTabNavigator,
+  createAppContainer,
+  createStackNavigator
+} from "react-navigation";
 import { auth } from "./config/config";
-import FeedScreen from "./src/screens/feed";
-import UploadScreen from "./src/screens/upload";
-import ProfileScreen from "./src/screens/profile";
+import FeedScreen from "./src/screens/Feed";
+import UploadScreen from "./src/screens/Upload";
+import ProfileScreen from "./src/screens/Profile";
+import UserProfileScreen from "./src/screens/UserProfile";
+import CommentsScreen from "./src/screens/Comments";
 
 const TabStack = createBottomTabNavigator({
   Feeds: { screen: FeedScreen },
@@ -20,7 +26,20 @@ const TabStack = createBottomTabNavigator({
   Profiles: { screen: ProfileScreen }
 });
 
-const TabNavigator = createAppContainer(TabStack);
+const MainStack = createStackNavigator(
+  {
+    Home: { screen: TabStack },
+    User: { screen: UserProfileScreen },
+    Comments: { screen: CommentsScreen }
+  },
+  {
+    initialRouteName: "Home",
+    mode: "modal",
+    headerMode: "none"
+  }
+);
+
+const TabNavigator = createAppContainer(MainStack);
 
 export default class App extends Component {
   login = async () => {

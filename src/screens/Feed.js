@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Image, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  TouchableOpacity
+} from "react-native";
 import { f, auth, database, storage } from "../../config/config.js";
 
 class FeedScreen extends Component {
@@ -73,13 +80,14 @@ class FeedScreen extends Component {
               var exists = snapshot.val() !== null;
               if (exists) data = snapshot.val();
 
-              photo_feed.push({
-                id: photo,
-                url: photoObj.url,
-                caption: photoObj.caption,
-                posted: that.timeConverter(photoObj.posted),
-                author: data
-              });
+      photo_feed.push({
+        id: photo,
+        url: photoObj.url,
+        caption: photoObj.caption,
+        posted: that.timeConverter(photoObj.posted),
+        author: data,
+        authorId: photoObj.author
+      });
 
               that.setState({
                 refresh: false,
@@ -120,7 +128,16 @@ class FeedScreen extends Component {
               <View key={index} style={styles.contentInFlatList}>
                 <View style={styles.descriptionHeaderPhoto}>
                   <Text>{item.posted}</Text>
-                  <Text>{item.author}</Text>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate("User", {
+                        userId: item.authorId
+                      })
+                    }
+                  >
+                    <Text>{item.author}</Text>
+                  </TouchableOpacity>
                 </View>
 
                 <View>
