@@ -1,17 +1,26 @@
 import React, { Component } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { f } from "../../config/config";
+import { Text, View, StyleSheet, TouchableOpacity, Alert, PermissionsAndroid, ImagePickerIOS } from "react-native";
+import ImagePicker from 'react-native-image-picker';
+import { f, storage } from "../../config/config";
 
 class UploadScreen extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            loggedin: false,
-            imageId: this.uniqueId()
-        };
-        Alert.alert(this.uniqueId())
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      loggedin: false,
+      imageId: this.uniqueId(),
+      pickedImage: null
+    };
+  }
 
+  // _checkPermissions = async () => {
+  //   const { status } = await PermissionsAndroid.askAsync(PERMISSIONS.CAMERA);
+  //   this.setState({camera: status});
+  //     const { statusRoll } = await PermissionsAndroid.askAsync(PERMISSIONS.CAMERA_ROOL);
+  //     this.setState({
+  //         camera: statusRoll
+  //     });
+  // };
 
   s4 = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -19,13 +28,68 @@ class UploadScreen extends Component {
       .substring(1);
   };
   uniqueId = () => {
-      console.log('s4', this.s4())
-    return (this.s4() + this.s4() + "-" + this.s4() + "-" + this.s4() + "-" +
-      this.s4() + "-" + this.s4() + "-" + this.s4() + "-" + this.s4()
+    return (
+      this.s4() +
+      this.s4() +
+      "-" +
+      this.s4() +
+      "-" +
+      this.s4() +
+      "-" +
+      this.s4() +
+      "-" +
+      this.s4() +
+      "-" +
+      this.s4() +
+      "-" +
+      this.s4()
     );
   };
 
-  findNewImage = () => {};
+  findNewImage =() => {
+      //this._checkPermissions()
+
+  //  let result = await ImagePicker.launchImageLibrary({
+  //      mediaType: "photo",
+  //      allowsEditing: true,
+  //      quality: 1
+  //  });
+  // console.log('result',result)
+      ImagePicker.showImagePicker({title:'Picked an Image'}, res => {
+        if(res.didCancel){
+          console.log('User cancelled')
+        } else if (res.error){
+          console.log("Error", res.error)
+        } else {
+          // this.setState({
+          //     pickedImage:{uri: res.uri}
+          // })
+        this.uploadImage(res.uri)
+
+        }
+      });
+  };
+
+  uploadImage = async(uri) => {
+   var that = this;
+   var userid = f.auth().currentUser.uid;
+   var imageId = this.state.imageId;
+
+   var re = /(?:\.([^.]+))?$/;
+   var ext = re.exec(uri)[1];
+   this.setState({
+       currentFileType: ext
+   });
+      const response = await fetch(uri);
+   const blob = await response.blob();
+   var FilePath = imageId+'.'+that.state.currentFileType;
+
+      const ref = storage.ref('user/' + userid +'/img').child(FilePath);
+
+   var snapshot = ref.put(blob).on('state_changed', snapshot => {
+     console.log("Progress", snapshot.bytesTransferred, snapshot.totalBytes);
+   })
+  };
 
   componentDidMount() {
     const that = this;
@@ -44,7 +108,6 @@ class UploadScreen extends Component {
       }
     });
   }
-
 
   render() {
     return (
