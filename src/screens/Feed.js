@@ -113,7 +113,11 @@ class FeedScreen extends Component {
         </View>
         {loading === true ? (
           <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
           >
             <Text>Loading....</Text>
           </View>
@@ -149,7 +153,13 @@ class FeedScreen extends Component {
 
                 <View style={styles.descriptionBottomPhoto}>
                   <Text>{item.caption}</Text>
-                  <Text style={styles.comments}>View comments</Text>
+                  <TouchableOpacity onPress={() => this.props.navigation.navigate("Comments", {
+                        userId: item.id
+                      })
+                    }
+                  >
+                    <Text style={[styles.comments,{color: 'blue'}]}>View comments</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             )}

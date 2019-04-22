@@ -85,8 +85,11 @@ class UserProfileScreen extends Component {
         ) : (
           <View style={{ flex: 1 }}>
             <View style={styles.topScreenName}>
-              <TouchableOpacity onPress={() => this.props.navigation.goBack()} style={{width:100}}>
-                <Text style={{fontSize: 12, fontWeight: 'bold', paddingLeft:10}}>Go Back</Text>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.goBack()}
+                style={styles.goBackButton}
+              >
+                <Text style={styles.goBackButtonText}>Go Back</Text>
               </TouchableOpacity>
               <Text>Profile</Text>
             </View>
@@ -155,6 +158,14 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: "center",
     color: "grey"
+  },
+  goBackButton: {
+    width: 100
+  },
+  goBackButtonText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    paddingLeft: 10
   },
   loadingPhotos: {
     flex: 1,

@@ -22,7 +22,7 @@ import CommentsScreen from "./src/screens/Comments";
 
 const TabStack = createBottomTabNavigator({
   Feeds: { screen: FeedScreen },
-  Uploads: { screen: UploadScreen },
+  Upload: { screen: UploadScreen },
   Profiles: { screen: ProfileScreen }
 });
 

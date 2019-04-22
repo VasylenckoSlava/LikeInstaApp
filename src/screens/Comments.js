@@ -31,11 +31,11 @@ class CommentsScreen extends Component {
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 {this.state.loggedin === true ? (
                     // are logged in
-                    <Text>Upload</Text>
+                    <Text>Comments</Text>
                 ) : (
                     <View>
                         <Text>You are not logged in</Text>
-                        <Text> Please login to upload a photo</Text>
+                        <Text> Please login to post a comment</Text>
                     </View>
                 )}
             </View>
