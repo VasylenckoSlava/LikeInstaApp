@@ -9,7 +9,7 @@ import {
   Image
 } from "react-native";
 import ImagePicker from "react-native-image-picker";
-import { f, storage } from "../../config/config";
+import { f, storage, database } from "../../config/config";
 
 class UploadScreen extends Component {
   constructor(props) {
@@ -86,10 +86,14 @@ class UploadScreen extends Component {
   };
 
   uploadPublish = () => {
-    if (this.state.caption !== "") {
-      this.uploadImage(this.state.uri);
+    if(this.state.uploading === false){
+        if (this.state.caption !== "") {
+            this.uploadImage(this.state.uri);
+        } else {
+            alert("Please enter a caption...");
+        }
     } else {
-      alert("Please enter a caption...");
+      console.log("Tap is already uploading")
     }
   };
 
@@ -126,14 +130,41 @@ class UploadScreen extends Component {
       //complete
         that.setState({progress:100});
         uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-          console.log(downloadURL)
-          alert(downloadURL)
+          console.log(downloadURL);
+            that.processUpload(downloadURL)
         })
     });
+  };
 
-    // var snapshot = ref.put(blob).on("state_changed", snapshot => {
-    //   console.log("Progress", snapshot.bytesTransferred, snapshot.totalBytes);
-    // });
+  processUpload = (imageUrl) => {
+  // Processing here
+      var imageId = this.state.imageId;
+      var userId = f.auth().currentUser.uid;
+      var caption = this.state.caption;
+      var dateTime = Date.now();
+      var timestamp = Math.floor(dateTime / 1000);
+      //Build photo object
+
+      var photoObj = {
+        author: userId,
+        caption: caption,
+        posted: timestamp,
+        url: imageUrl
+      };
+
+   //update database
+    database.ref('/photos/' +imageId).set(photoObj);
+  // Set the user data
+    database.ref('/users/' +userId +'/photos/' +imageId).set(photoObj);
+
+    alert('Image Uploaded!!');
+
+      this.setState({
+          uploading: false,
+          imageSelected: false,
+          caption: "",
+          uri: ""
+      })
   };
 
   componentDidMount() {
