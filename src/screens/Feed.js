@@ -55,6 +55,32 @@ class FeedScreen extends Component {
     return Math.floor(seconds) + " seconds" + this.pluralCheck(interval);
   };
 
+  addToFlatList = (photo_feed, data, photo) => {
+    var that = this;
+      var photoObj = data[photo];
+      database.ref("users").child(photoObj.author).child('username')
+          .once("value")
+          .then(function(snapshot) {
+              var exists = snapshot.val() !== null;
+              if (exists) data = snapshot.val();
+
+              photo_feed.push({
+                  id: photo,
+                  url: photoObj.url,
+                  caption: photoObj.caption,
+                  posted: that.timeConverter(photoObj.posted),
+                  author: data,
+                  authorId: photoObj.author
+              });
+
+              that.setState({
+                  refresh: false,
+                  loading: false
+              });
+          })
+          .catch(error => console.log(error));
+  };
+
   loadFeed = () => {
     this.setState({
       refresh: true,
@@ -62,39 +88,14 @@ class FeedScreen extends Component {
     });
     var that = this;
 
-    database
-      .ref("photos")
-      .orderByChild("posted")
-      .once("value")
-      .then(function(snapshot) {
+    database.ref("photos").orderByChild("posted").once("value").then(function(snapshot) {
         const exists = snapshot.val() !== null;
         if (exists) data = snapshot.val();
 
         var photo_feed = that.state.photo_feed;
 
         for (var photo in data) {
-          var photoObj = data[photo];
-          database.ref("users").child(photoObj.author).child('username')
-            .once("value")
-            .then(function(snapshot) {
-              var exists = snapshot.val() !== null;
-              if (exists) data = snapshot.val();
-
-      photo_feed.push({
-        id: photo,
-        url: photoObj.url,
-        caption: photoObj.caption,
-        posted: that.timeConverter(photoObj.posted),
-        author: data,
-        authorId: photoObj.author
-      });
-
-              that.setState({
-                refresh: false,
-                loading: false
-              });
-            })
-            .catch(error => console.log(error));
+          that.addToFlatList(photo_feed, data,photo )
         }
       })
       .catch(error => console.log(error));
@@ -140,7 +141,7 @@ class FeedScreen extends Component {
                       })
                     }
                   >
-                    <Text>{item.author}</Text>
+                    <Text>{item.author.toString()}</Text>
                   </TouchableOpacity>
                 </View>
 
