@@ -8,6 +8,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { f, auth, database, storage } from "../../config/config.js";
+import PhotoList from "../components/photoList";
 
 class UserProfileScreen extends Component {
   state = {
@@ -102,9 +103,7 @@ class UserProfileScreen extends Component {
                 <Text>{this.state.username}</Text>
               </View>
             </View>
-            <View style={styles.loadingPhotos}>
-              <Text>Loading photos....</Text>
-            </View>
+              <PhotoList isUser={true} userId={this.state.userId} navigation={this.props.navigation} />
           </View>
         )}
       </View>

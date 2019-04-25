@@ -8,6 +8,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { f, auth, database, storage } from "../../config/config.js";
+import PhotoList from "../components/photoList";
 
 class ProfileScreen extends Component {
   state = {
@@ -20,7 +21,8 @@ class ProfileScreen extends Component {
       if (user) {
         //Logged in
         that.setState({
-          loggedin: true
+          loggedin: true,
+          userId: user.uid
         });
       } else {
         // Not logged in
@@ -73,11 +75,7 @@ class ProfileScreen extends Component {
                 </Text>
               </TouchableOpacity>
             </View>
-
-            <View style={styles.loadingPhotos}>
-              <Text>Loading photos....</Text>
-            </View>
-
+              <PhotoList isUser={true} userId={this.state.userId} navigation={this.props.navigation} />
           </View>
         ) : (
           <View style={styles.notLoggedInContainer}>
