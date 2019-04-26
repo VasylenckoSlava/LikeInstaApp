@@ -16,7 +16,6 @@ class UserProfileScreen extends Component {
   };
 
   checkParams = () => {
-    //const { navigation } = this.props;
     const params = this.props.navigation.state.params;
     if (params) {
       if (params.userId) {
@@ -36,7 +35,7 @@ class UserProfileScreen extends Component {
       .once("value")
       .then(snapshot => {
         const exists = snapshot.val() !== null;
-        if (exists) data = snapshot.val();
+        if (exists) var data = snapshot.val();
         this.setState({
           username: data
         });
@@ -49,8 +48,8 @@ class UserProfileScreen extends Component {
       .child("name")
       .once("value")
       .then(snapshot => {
-        const exists = snapshot.val() !== null;
-        if (exists) data = snapshot.val();
+        const exists = (snapshot.val() !== null);
+        if (exists) var data = snapshot.val();
         this.setState({
           name: data
         });
@@ -63,8 +62,8 @@ class UserProfileScreen extends Component {
       .child("avatar")
       .once("value")
       .then(snapshot => {
-        const exists = snapshot.val() !== null;
-        if (exists) data = snapshot.val();
+        const exists = (snapshot.val() !== null);
+        if (exists) var data = snapshot.val();
         this.setState({
           avatar: data,
           loaded: true
@@ -103,6 +102,7 @@ class UserProfileScreen extends Component {
                 <Text>{this.state.username}</Text>
               </View>
             </View>
+
               <PhotoList isUser={true} userId={this.state.userId} navigation={this.props.navigation} />
           </View>
         )}

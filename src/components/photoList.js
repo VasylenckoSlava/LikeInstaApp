@@ -1,20 +1,23 @@
 import React, { Component } from "react";
 import {
   TouchableOpacity,
-  FlatList,
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
+  FlatList
 } from "react-native";
 import { f, auth, database, storage } from "../../config/config";
 
 class PhotoList extends Component {
-  state = {
-    photo_feed: [],
-    refresh: false,
-    loading: true
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      photo_feed: [],
+      refresh: false,
+      loading: true
+    };
+  }
 
   componentDidMount() {
     const { isUser, userId } = this.props;
@@ -61,15 +64,12 @@ class PhotoList extends Component {
 
   addToFlatList = (photo_feed, data, photo) => {
     var that = this;
+
     var photoObj = data[photo];
-    database
-      .ref("users")
-      .child(photoObj.author)
-      .child("username")
-      .once("value")
+    database.ref("users").child(photoObj.author).child("username").once("value")
       .then(function(snapshot) {
-        var exists = snapshot.val() !== null;
-        if (exists) data = snapshot.val();
+        var exists = (snapshot.val() !== null);
+        if (exists) var data = snapshot.val();
 
         photo_feed.push({
           id: photo,
@@ -97,18 +97,12 @@ class PhotoList extends Component {
 
     var loadRef = database.ref("photos");
     if (userId !== "") {
-      loadRef = database
-        .ref("users")
-        .child(userId)
-        .child("photos");
+      loadRef = database.ref("users").child(userId).child("photos");
     }
 
-    loadRef
-      .orderByChild("posted")
-      .once("value")
-      .then(function(snapshot) {
-        const exists = snapshot.val() !== null;
-        if (exists) data = snapshot.val();
+    loadRef.orderByChild("posted").once("value").then(function(snapshot) {
+        const exists = (snapshot.val() !== null);
+        if (exists) var data = snapshot.val();
 
         var photo_feed = that.state.photo_feed;
 
@@ -118,6 +112,11 @@ class PhotoList extends Component {
       })
       .catch(error => console.log(error));
   };
+
+  loadNew = () => {
+    this.loadFeed();
+  };
+
   render() {
     const { refresh, photo_feed, loading } = this.state;
     return (
@@ -146,12 +145,12 @@ class PhotoList extends Component {
 
                   <TouchableOpacity
                     onPress={() =>
-                      this.props.navigation.navigate("User", {
-                        userId: item.authorId
+                      this.props.navigation.navigate("Comments", {
+                        photoId: item.id
                       })
                     }
                   >
-                    <Text>{item.author.toString()}</Text>
+                    <Text>{item.author}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -167,7 +166,7 @@ class PhotoList extends Component {
                   <TouchableOpacity
                     onPress={() =>
                       this.props.navigation.navigate("Comments", {
-                        userId: item.id
+                        photoId: item.id
                       })
                     }
                   >
