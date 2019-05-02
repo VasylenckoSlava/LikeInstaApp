@@ -161,9 +161,11 @@ class CommentsScreen extends Component {
     return Math.floor(seconds) + " seconds" + this.pluralCheck(interval);
   };
 
+  postComment = () => {};
+
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: "lightgrey" }}>
         <View style={styles.topScreenName}>
           <TouchableOpacity
             onPress={() => this.props.navigation.goBack()}
@@ -171,11 +173,13 @@ class CommentsScreen extends Component {
           >
             <Text style={styles.goBackButtonText}>Go Back</Text>
           </TouchableOpacity>
-          <Text>Comments</Text>
+          <View style={styles.textPosition}>
+            <Text>Comments</Text>
+          </View>
         </View>
 
         <View style={styles.imageContainer}>
-          <Image source={{ uri: this.state.avatar }} style={styles.image} />
+          {/*<Image source={{ uri: this.state.avatar }} style={styles.image} />*/}
 
           <View style={{ marginRight: 10 }}>
             <Text>{this.state.name}</Text>
@@ -194,22 +198,47 @@ class CommentsScreen extends Component {
             style={styles.flatList}
             renderItem={({ item, index }) => (
               <View key={index} style={styles.flatListItem}>
-                <View>
+                <View style={styles.commentDescription}>
                   <Text>{item.posted}</Text>
-                  <TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate("User", {
+                        userId: item.authorId
+                      })
+                    }
+                  >
                     <Text>{item.author}</Text>
                   </TouchableOpacity>
                 </View>
-                  <View>
-                      <Text>{item.comment}</Text>
-                  </View>
+
+                <View style={{ padding: 5 }}>
+                  <Text>{item.comment}</Text>
+                </View>
               </View>
             )}
           />
         )}
         {this.state.loggedin === true ? (
           // are logged in
-          <Text>Comments</Text>
+          <KeyboardAvoidingView
+            behavior="padding"
+            enabled
+            style={styles.keyboard}
+          >
+            <Text style={{ fontWeight: "bold" }}>Post Comment</Text>
+            <View>
+              <TextInput
+                editable
+                placeholder="Enter your comment here .."
+                onChangeText={text => this.setState({ comment: text })}
+                style={styles.textInput}
+              />
+              <TouchableOpacity onPress={() => this.postComment()}>
+                <Text>Post</Text>
+              </TouchableOpacity>
+            </View>
+          </KeyboardAvoidingView>
         ) : (
           <View>
             <Text>You are not logged in</Text>
@@ -243,7 +272,7 @@ const styles = StyleSheet.create({
   },
   image: {
     marginLeft: 10,
-    width: 100,
+    width: "100%",
     height: 100,
     borderRadius: 50
   },
@@ -276,12 +305,37 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee"
   },
   flatListItem: {
-    width: 100,
+    width: "100%",
     overflow: "hidden",
     marginBottom: 5,
     justifyContent: "space-between",
     borderBottomWidth: 1,
     borderColor: "grey"
+  },
+  commentDescription: {
+    padding: 5,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  textPosition: {
+    flex: 1,
+    marginLeft: 54
+  },
+  keyboard: {
+    borderTopWidth: 1,
+    borderTopColor: "grey",
+    padding: 10,
+    marginBottom: 15
+  },
+  textInput: {
+    marginVertical: 10,
+    height: 50,
+    padding: 5,
+    borderColor: "grey",
+    borderRadius: 3,
+    backgroundColor: "white",
+    color: "black"
   }
 });
 

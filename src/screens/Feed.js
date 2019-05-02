@@ -3,11 +3,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
-  FlatList,
-  TouchableOpacity
 } from "react-native";
-import { f, auth, database, storage } from "../../config/config.js";
+// import { f, auth, database, storage } from "../../config/config.js";
 import PhotoList from "../components/photoList";
 
 class FeedScreen extends Component {

@@ -70,8 +70,8 @@ class ProfileScreen extends Component {
                 style={[styles.button, { backgroundColor: "grey" }]}
                 onPress={() => navigation.navigate("Uploads")}
               >
-                <Text style={[styles.buttonText, { color: "white" }]}>
-                  Upload New +
+                <Text style={[styles.buttonText, { color: "black" }]}>
+                  Ura Upload New +
                 </Text>
               </TouchableOpacity>
             </View>
