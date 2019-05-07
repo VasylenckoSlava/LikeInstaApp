@@ -161,7 +161,40 @@ class CommentsScreen extends Component {
     return Math.floor(seconds) + " seconds" + this.pluralCheck(interval);
   };
 
-  postComment = () => {};
+  postComment = () => {
+    const comment = this.state.comment;
+    if (comment !== "") {
+      var imageId = this.state.photoId;
+      var userId = f.auth().currentUser.uid;
+      var commentId = this.uniqueId();
+      var dateTime = Date.now();
+      var timestamp = Math.floor(dateTime / 1000);
+
+      this.setState({
+        comment: ""
+      });
+
+      var commentObj = {
+        posted: timestamp,
+        author: userId,
+        comment: comment
+      };
+
+      database.ref("/comments/" + imageId + "/" + commentId).set(commentObj);
+
+      // reload comment
+      this.reloadCommentList();
+    } else {
+      alert("Please enter a comment before posting");
+    }
+  };
+
+  reloadCommentList = () => {
+    this.setState({
+      comments_list: []
+    });
+    this.fetchComments(this.state.photoId);
+  };
 
   render() {
     return (
@@ -178,17 +211,9 @@ class CommentsScreen extends Component {
           </View>
         </View>
 
-        <View style={styles.imageContainer}>
-          {/*<Image source={{ uri: this.state.avatar }} style={styles.image} />*/}
-
-          <View style={{ marginRight: 10 }}>
-            <Text>{this.state.name}</Text>
-            <Text>{this.state.username}</Text>
-          </View>
-        </View>
         {this.state.comments_list.length === 0 ? (
           // no comments
-          <Text>No Comments ...</Text>
+          <Text>No comments found...</Text>
         ) : (
           //are comments
           <FlatList
@@ -234,8 +259,11 @@ class CommentsScreen extends Component {
                 onChangeText={text => this.setState({ comment: text })}
                 style={styles.textInput}
               />
-              <TouchableOpacity onPress={() => this.postComment()}>
-                <Text>Post</Text>
+              <TouchableOpacity
+                onPress={() => this.postComment()}
+                style={styles.buttonPost}
+              >
+                <Text style={{ color: "white" }}>Post</Text>
               </TouchableOpacity>
             </View>
           </KeyboardAvoidingView>
@@ -264,18 +292,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center"
   },
-  imageContainer: {
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    flexDirection: "row",
-    paddingVertical: 10
-  },
-  image: {
-    marginLeft: 10,
-    width: "100%",
-    height: 100,
-    borderRadius: 50
-  },
   buttonsBlock: {
     paddingBottom: 20,
     borderBottomWidth: 1
@@ -291,6 +307,12 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: "center",
     color: "grey"
+  },
+  buttonPost: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "blue",
+    borderRadius: 5
   },
   goBackButton: {
     width: 100

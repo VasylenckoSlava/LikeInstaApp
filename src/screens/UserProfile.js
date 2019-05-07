@@ -28,6 +28,7 @@ class UserProfileScreen extends Component {
   };
 
   fetchUserInfo = userId => {
+    var that = this;
     database
       .ref("users")
       .child(userId)
@@ -36,7 +37,7 @@ class UserProfileScreen extends Component {
       .then(snapshot => {
         const exists = snapshot.val() !== null;
         if (exists) var data = snapshot.val();
-        this.setState({
+          that.setState({
           username: data
         });
       })
@@ -50,7 +51,7 @@ class UserProfileScreen extends Component {
       .then(snapshot => {
         const exists = (snapshot.val() !== null);
         if (exists) var data = snapshot.val();
-        this.setState({
+          that.setState({
           name: data
         });
       })
@@ -64,7 +65,7 @@ class UserProfileScreen extends Component {
       .then(snapshot => {
         const exists = (snapshot.val() !== null);
         if (exists) var data = snapshot.val();
-        this.setState({
+          that.setState({
           avatar: data,
           loaded: true
         });
