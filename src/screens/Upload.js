@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import ImagePicker from "react-native-image-picker";
 import { f, storage, database } from "../../config/config";
+import UserAuth from "../components/auth";
 
 class UploadScreen extends Component {
   constructor(props) {
@@ -254,10 +255,7 @@ class UploadScreen extends Component {
             )}
           </View>
         ) : (
-          <View style={styles.text}>
-            <Text>You are not logged in</Text>
-            <Text> Please login to upload a photo</Text>
-          </View>
+            <UserAuth message={'Please login to view your profile'} />
         )}
       </View>
     );

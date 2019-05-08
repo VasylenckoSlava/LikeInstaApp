@@ -7,7 +7,7 @@
  */
 
 import React, { Component } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet,Button } from "react-native";
 import {
   createBottomTabNavigator,
   createAppContainer,
@@ -42,20 +42,9 @@ const MainStack = createStackNavigator(
 const TabNavigator = createAppContainer(MainStack);
 
 export default class App extends Component {
-  login = async () => {
-    try {
-      let user = await auth.signInWithEmailAndPassword(
-        "testtomych@user.com",
-        "password"
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   constructor(props) {
     super(props);
-    this.login();
   }
 
   render() {

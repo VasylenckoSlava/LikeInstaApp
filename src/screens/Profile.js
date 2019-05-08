@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { f, auth, database, storage } from "../../config/config.js";
 import PhotoList from "../components/photoList";
+import UserAuth from "../components/auth";
 
 class ProfileScreen extends Component {
   state = {
@@ -165,10 +166,7 @@ class ProfileScreen extends Component {
             />
           </View>
         ) : (
-          <View style={styles.notLoggedInContainer}>
-            <Text>You are not logged in</Text>
-            <Text> Please login to view your profile</Text>
-          </View>
+         <UserAuth message={'Please login to view your profile'} />
         )}
       </View>
     );

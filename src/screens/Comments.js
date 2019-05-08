@@ -7,9 +7,10 @@ import {
   KeyboardAvoidingView,
   Image,
   StyleSheet,
-  FlatList
+  FlatList,Button
 } from "react-native";
 import { f, database } from "../../config/config";
+import UserAuth from "../components/auth";
 
 class CommentsScreen extends Component {
   state = {
@@ -268,10 +269,7 @@ class CommentsScreen extends Component {
             </View>
           </KeyboardAvoidingView>
         ) : (
-          <View>
-            <Text>You are not logged in</Text>
-            <Text> Please login to post a comment</Text>
-          </View>
+          <UserAuth message={"Please login to view your profile"} />
         )}
       </View>
     );
