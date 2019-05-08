@@ -4,7 +4,7 @@ import {
   Text,
   View,
   Image,
-  Alert,
+  TextInput,
   TouchableOpacity
 } from "react-native";
 import { f, auth, database, storage } from "../../config/config.js";
@@ -14,16 +14,33 @@ class ProfileScreen extends Component {
   state = {
     loggedin: false
   };
+
+  fetchUserInfo = userId => {
+    var that = this;
+    database
+      .ref("users")
+      .child(userId)
+      .once("value")
+      .then(function(snapshot) {
+        const exists = snapshot.val() !== null;
+        if (exists) var data = snapshot.val();
+        that.setState({
+          username: data.username,
+          name: data.name,
+          avatar: data.avatar,
+          loggedin: true,
+          userId: userId
+        });
+      });
+  };
+
   componentDidMount() {
-    const that = this;
+    var that = this;
 
     f.auth().onAuthStateChanged(function(user) {
       if (user) {
         //Logged in
-        that.setState({
-          loggedin: true,
-          userId: user.uid
-        });
+        that.fetchUserInfo(user.uid);
       } else {
         // Not logged in
         that.setState({
@@ -32,6 +49,18 @@ class ProfileScreen extends Component {
       }
     });
   }
+
+  logoutUser = () => {
+    f.auth().signOut();
+    alert("Logged Out");
+  };
+
+  editProfile = () => {
+    this.setState({
+      editingProfile: true
+    });
+  };
+
   render() {
     const { navigation } = this.props;
     return (
@@ -46,36 +75,78 @@ class ProfileScreen extends Component {
             <View style={styles.imageContainer}>
               <Image
                 source={{
-                  uri: "https://api.adorable.io/avatars/285/test@user.i.png"
+                  uri: this.state.avatar
                 }}
                 style={styles.image}
               />
 
               <View style={{ marginRight: 10 }}>
-                <Text>Name</Text>
-                <Text>UserName</Text>
+                <Text>{this.state.name}</Text>
+                <Text>{this.state.username}</Text>
               </View>
             </View>
 
-            <View style={styles.buttonsBlock}>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
+            {this.state.editingProfile === true ? (
+              <View style={styles.editProfileView}>
+                <TouchableOpacity
+                  onPress={() => this.setState({ editingProfile: false })}
+                >
+                  <Text style={{ fontWeight: "bold" }}>Cancel Editing</Text>
+                </TouchableOpacity>
+                <Text>Name:</Text>
+                <TextInput
+                  editable
+                  placeholder={"Enter your name"}
+                  onChangeText={text => this.setState({ name: text })}
+                  value={this.state.name}
+                  style={{width:250, marginVertical:10, padding: 5, borderColor:'grey',borderWidth: 1, borderRadius:5}}
+                />
+                  <Text>Username:</Text>
+                  <TextInput
+                      editable
+                      placeholder={"Enter your username"}
+                      onChangeText={text => this.setState({ username: text })}
+                      value={this.state.username}
+                      style={{width:250, marginVertical:10, padding: 5, borderColor:'grey',borderWidth: 1,borderRadius:5}}
+                  />
+                  <TouchableOpacity
+                      onPress={() => this.saveProfile()}
+                      style={{backgroundColor: 'blue', padding: 10,borderRadius:5}}
+                  >
+                      <Text style={{ fontWeight: "bold", color:'white' }}>Save Changes</Text>
+                  </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.buttonsBlock}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => this.logoutUser()}
+                >
+                  <Text style={styles.buttonText}>Logout</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Edit Profile</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => this.editProfile()}
+                >
+                  <Text style={styles.buttonText}>Edit Profile</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: "grey" }]}
-                onPress={() => navigation.navigate("Uploads")}
-              >
-                <Text style={[styles.buttonText, { color: "black" }]}>
-                  Ura Upload New +
-                </Text>
-              </TouchableOpacity>
-            </View>
-              <PhotoList isUser={true} userId={this.state.userId} navigation={this.props.navigation} />
+                <TouchableOpacity
+                  style={[styles.button, { backgroundColor: "grey" }]}
+                  onPress={() => navigation.navigate("Uploads")}
+                >
+                  <Text style={[styles.buttonText, { color: "black" }]}>
+                    Upload New +
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <PhotoList
+              isUser={true}
+              userId={this.state.userId}
+              navigation={this.props.navigation}
+            />
           </View>
         ) : (
           <View style={styles.notLoggedInContainer}>
@@ -121,6 +192,11 @@ const styles = StyleSheet.create({
   buttonsBlock: {
     paddingBottom: 20,
     borderBottomWidth: 1
+  },
+  editProfileView: {
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    alignItems: "center"
   },
   button: {
     marginTop: 10,
