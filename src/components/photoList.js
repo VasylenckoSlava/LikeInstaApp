@@ -15,7 +15,8 @@ class PhotoList extends Component {
     this.state = {
       photo_feed: [],
       refresh: false,
-      loading: true
+      loading: true,
+      empty: false
     };
   }
 
@@ -76,13 +77,17 @@ class PhotoList extends Component {
           url: photoObj.url,
           caption: photoObj.caption,
           posted: that.timeConverter(photoObj.posted),
+          timestamp: photoObj.posted,
           author: data,
           authorId: photoObj.author
         });
 
+        var myData = [].concat(photo_feed).sort((a,b) =>  a.timestamp < b.timestamp);
+
         that.setState({
           refresh: false,
-          loading: false
+          loading: false,
+          photo_feed: myData
         });
       })
       .catch(error => console.log(error));
@@ -102,15 +107,23 @@ class PhotoList extends Component {
 
     loadRef.orderByChild("posted").once("value").then(function(snapshot) {
         const exists = (snapshot.val() !== null);
-        if (exists) var data = snapshot.val();
+        if (exists) {
+            data = snapshot.val();
 
-        var photo_feed = that.state.photo_feed;
+            var photo_feed = that.state.photo_feed;
+            that.setState({
+                empty:false
+            });
 
-        for (var photo in data) {
-          that.addToFlatList(photo_feed, data, photo);
+            for (var photo in data) {
+                that.addToFlatList(photo_feed, data, photo);
+            }
+        }else{
+          that.setState({
+              empty:true
+          })
         }
-      })
-      .catch(error => console.log(error));
+      }).catch(error => console.log(error));
   };
 
   loadNew = () => {
@@ -129,7 +142,7 @@ class PhotoList extends Component {
               alignItems: "center"
             }}
           >
-            <Text>Loading....</Text>
+              {this.state.empty === true ? (<Text>No photos found...</Text>) : <Text>Loading....</Text>}
           </View>
         ) : (
           <FlatList

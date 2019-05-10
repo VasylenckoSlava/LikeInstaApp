@@ -269,7 +269,7 @@ class CommentsScreen extends Component {
             </View>
           </KeyboardAvoidingView>
         ) : (
-          <UserAuth message={"Please login to view your profile"} />
+          <UserAuth message={"Please login to view your profile"} moveScreen={true} navigation={this.props.navigation} />
         )}
       </View>
     );

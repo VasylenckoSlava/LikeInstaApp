@@ -4,7 +4,6 @@ import {
   View,
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
   StyleSheet
 } from "react-native";
 import {f, database, auth} from "../../config/config";
@@ -24,18 +23,25 @@ class UserAuth extends Component {
 
       if(email !== '' && pass !== ''){
         try {
-          let user = await auth.signInWithEmailAndPassword(email, pass); 
+          let user = await auth.signInWithEmailAndPassword(email, pass);
             } catch (error) {
             console.log(error);
-           alert(error); 
-      } 
+           alert(error);
+      }
       } else {
         alert('email or password is empty');
       }
     };
 
     createUserObj = (userObj, email) => {
-
+      console.log(userObj, email, userObj.uid);
+      var uObj = {
+        name: 'Enter name',
+        username: '@name',
+        avatar:'http://www.gravatar.com/avatar',
+        email: email
+      }
+      database.ref('users').child(userObj.uid).set(uObj);
     };
 
     signup = async () => {
@@ -48,18 +54,40 @@ class UserAuth extends Component {
           let user = await auth.createUserWithEmailAndPassword(email, pass).then(
             (userObj) => this.createUserObj(userObj.user, email)
           ).catch((error) => alert(error));
-          
+
             } catch (error) {
             console.log(error);
-           alert(error); 
-      } 
+           alert(error);
+      }
       } else {
         alert('email or password is empty');
       }
     };
 
 
-  componentDidMount() {}
+  componentDidMount() {
+      if(this.props.moveScreen === true){
+         this.setState({
+             moveScreen: true
+         });
+      }
+  }
+
+  showLogin = () => {
+      if(this.state.moveScreen === true){
+          this.props.navigation.navigate("Upload");
+          return false;
+      }
+      this.setState({authStep: 1})
+  };
+
+  showSignUp = () => {
+      if(this.state.moveScreen === true){
+          this.props.navigation.navigate("Upload");
+          return false;
+      }
+        this.setState({authStep: 2})
+    };
 
   render() {
       console.log('bla message',this.props.message);
@@ -69,13 +97,13 @@ class UserAuth extends Component {
           <Text>{this.props.message}</Text>
             {this.state.authStep === 0 ? (
                 <View style={{marginVertical:20, flexDirection:'row'}}>
-                    <TouchableOpacity onPress={() => this.setState({authStep: 1})}>
+                    <TouchableOpacity onPress={() => this.showLogin()}>
                         <Text style={{fontWeight: 'bold', color: 'green'}}>Login</Text>
                     </TouchableOpacity>
 
                     <Text style={{marginHorizontal: 10}}>or</Text>
 
-                    <TouchableOpacity onPress={() => this.setState({authStep: 2})}>
+                    <TouchableOpacity onPress={() => this.showSignUp()}>
                         <Text style={{fontWeight: 'bold', color: 'blue'}}>Sign Up</Text>
                     </TouchableOpacity>
                 </View>) : (
