@@ -18,11 +18,13 @@ import UploadScreen from "./src/screens/Upload";
 import ProfileScreen from "./src/screens/Profile";
 import UserProfileScreen from "./src/screens/UserProfile";
 import CommentsScreen from "./src/screens/Comments";
+import ExampleScreen from "./src/screens/ExampleCounter/ExampleScreen";
 
 const TabStack = createBottomTabNavigator({
   Feeds: { screen: FeedScreen },
   Upload: { screen: UploadScreen },
-  Profiles: { screen: ProfileScreen }
+  Profiles: { screen: ProfileScreen },
+  Example: { screen: ExampleScreen }
 });
 
 const MainStack = createStackNavigator(
