@@ -12,13 +12,12 @@ import {
   createAppContainer,
   createStackNavigator
 } from "react-navigation";
-import { auth } from "./config/config";
-import FeedScreen from "./src/screens/Feed";
-import UploadScreen from "./src/screens/Upload";
-import ProfileScreen from "./src/screens/Profile";
-import UserProfileScreen from "./src/screens/UserProfile";
-import CommentsScreen from "./src/screens/Comments";
-import ExampleScreen from "./src/screens/ExampleCounter/ExampleScreen";
+import FeedScreen from "./screens/Feed";
+import UploadScreen from "./screens/Upload";
+import ProfileScreen from "./screens/Profile";
+import UserProfileScreen from "./screens/UserProfile";
+import CommentsScreen from "./screens/Comments";
+import ExampleScreen from "./screens/ExampleCounter/ExampleScreen";
 
 const TabStack = createBottomTabNavigator({
   Feeds: { screen: FeedScreen },
@@ -43,10 +42,6 @@ const MainStack = createStackNavigator(
 const TabNavigator = createAppContainer(MainStack);
 
 export default class App extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return <TabNavigator />;
   }

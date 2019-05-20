@@ -1,4 +1,5 @@
 import React, { Component, useState, useEffect } from "react";
+import { connect } from "react-redux";
 import {
   View,
   Text,
@@ -12,8 +13,9 @@ import {
 import Footer from "./Footer";
 import Header from "./Header";
 import RowComponent from "./RowComponent";
-import { DrawerItems } from "react-navigation";
-import { isTSTypeElement } from "@babel/types";
+import { addPlace, removePlace } from "../../../src/store/actions";
+// import { DrawerItems } from "react-navigation";
+// import { isTSTypeElement } from "@babel/types";
 
 const filterItems = (filter, items) => {
   return items.filter(item => {
@@ -59,7 +61,7 @@ class ExampleScreen extends Component {
   };
 
   handleFilter = filter => {
-    this.setSource(this.state.items, filterItems(filter, this.state.items), {
+    this.setSource(this.state.items, filterItems(this.state.filter, this.state.items), {
       filter
     });
   };
@@ -105,6 +107,7 @@ class ExampleScreen extends Component {
     });
     this.setSource(newItems, filterItems(this.state.filter, newItems));
   };
+
   setSource = (items, itemsDatasource, otherState = {}) => {
     this.setState({
       items,
@@ -172,7 +175,7 @@ class ExampleScreen extends Component {
                 />
               );
             }}
-            renderSeparator={(sectioId, rowId) => {
+            renderSeparator={(sectionId, rowId) => {
               return <View key={rowId} style={styles.separator} />;
             }}
           />
@@ -222,17 +225,22 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ExampleScreen;
+const mapStateToProps = state => {
+  return {
+    filter: state.count.filter,
+    items: state.count.items
+  };
+};
 
-// function ExampleScreen() {
-//   const [count, setCount] = useState(0);
-//   useEffect(() => {
-//     console.log(`You pressed ${count} times`);
-//   });
-//   return (
-//     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-//       <Text>You clicked {count} times:</Text>
-//       <Button onPress={() => setCount(count + 1)} title="Click me" />
-//     </View>
-//   );
-// }
+const mapDispatchToProps = dispatch => {
+  return {
+    onAddItemToCount: () => dispatch(addPlace()),
+    onRemoveItemFromCount: key => dispatch(removePlace(key))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ExampleScreen);
+

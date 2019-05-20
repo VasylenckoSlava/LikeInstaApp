@@ -37,7 +37,7 @@ class RowComponent extends PureComponent {
         onPress={() => onToggleEditing(false)}
         style={styles.done}
       >
-        <Text style={styles.doneText}>Save</Text>
+        <Text  style={styles.doneText}>Save</Text>
       </TouchableOpacity>
     );
 
